@@ -1,26 +1,21 @@
 def menu_pregunta(pregunta):
-
     while True:
-
         print("                 ", pregunta["pregunta"])
         print("-------------------------------------------------------------------")
-        print(pregunta["opcion 1"])
-        print(pregunta["opcion 2"])
-        print(pregunta["opcion 3"])
-        print(pregunta["opcion 4"])
+
+        letras = "ABCD"
+        respuestas = pregunta["respuestas"]
+
+        for letra, respuesta in zip(letras, respuestas):
+            print(f"{letra}. {respuesta['texto']}")
+
         print("-------------------------------------------------------------------")
 
-        try:
+        opcion = input("Ingrese una respuesta: ").strip().upper()
 
-            respuesta = str(input("                     Ingrese una respuesta: "))
+        if opcion not in letras[:len(respuestas)]:
+            print("Respuesta inválida")
+            continue
 
-            if respuesta not in ["A", "B", "C", "D"]:
-                print("-------------------------------------------------------------------")
-                print("                         Respuesta invalida")
-                print("-------------------------------------------------------------------")
-                menu_pregunta(pregunta)
-
-            return respuesta
-            
-        except ValueError:
-            print("Se debe ingresar una letra mayuscula de la A a la D")
+        posicion = letras.index(opcion)
+        return respuestas[posicion]["id"]

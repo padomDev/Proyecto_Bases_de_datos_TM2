@@ -50,8 +50,8 @@ def registro_service(
         mensaje_error.append("La contraseña debe contener al menos un número")
 
     #   Valida que la respuesta a la pregunta de ingreso sea correcta.
-    if respuesta != pregunta["respuesta_correcta"]:
-         mensaje_error.append("Respuesta ingresada incorrecta")
+    if not verificar_respuesta_repo(pregunta["id"], respuesta):
+        mensaje_error.append("Respuesta ingresada incorrecta")
     
     #   Evalua si existen menmsajes de error. Si existen, los retorna y limpia el registro de errores.
     if mensaje_error:
@@ -73,7 +73,7 @@ def login_service(
     respuesta
     ):
 
-    respuesta_verificada = verificar_respuesta_repo(pregunta, respuesta)
+    respuesta_verificada = verificar_respuesta_repo(pregunta["id"], respuesta)
 
     #   Evalua que la respuesta del captcha sea correcta
     if respuesta_verificada == 1:
@@ -88,10 +88,10 @@ def login_service(
             hasheo_generado = hash_casero_16_bytes_login(contraseña, usuario_db['salt'])
 
             #   Evalua que ambas contraseñas sean iguales.
-            if contraseña == hasheo_generado:
+            if usuario_db["password_hash"] == hasheo_generado[0]:
 
                 #   Si lo son, la funcion retorna "True".
-                log_login_repo(usuario_db[0])
+                log_login_repo(usuario_db["id"])
                 return True
 
             #   Si no son iguales carga mensaje de error en la lista de errores.

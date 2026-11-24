@@ -1,7 +1,7 @@
-from services.auth_service import *
-from repositories.vulnerabilidades_repo import *
-from domines.security import *
-from repositories.preguntas_repo import *
+from services.auth_service import registro_service, login_service
+from config.conexion import inicializar_db
+from repositories.preguntas_repo import obtener_pregunta_aleatoria_repo
+from repositories.usuarios_repo import buscar_usuario
 from controllers.menu_pregunta import menu_pregunta
 from controllers.menu_sistema import menu_sistema
 
@@ -29,6 +29,11 @@ def menu_ingreso():
                     confirm_contraseña = input("                      Ingrese nuevamente la contraseña: ")
                     print("-------------------------------------------------------------------")
                     pregunta = obtener_pregunta_aleatoria_repo()
+
+                    if pregunta is None:
+                        print("No hay preguntas registradas en la base de datos")
+                        continue
+
                     respuesta = menu_pregunta(pregunta)
                     print("-------------------------------------------------------------------")
                     registro = registro_service(
@@ -41,10 +46,10 @@ def menu_ingreso():
                     if registro != True:    
                         for mensaje in registro:
                             print(mensaje)
-                        menu_ingreso()
                     else:
                         print(f"        Registro realizado con exito, bienvenido al club, {usuario}")
-                        menu_sistema()
+                        usuario_db = buscar_usuario(usuario)
+                        menu_sistema(usuario_db["id"])
 
 
                 case 2 :
@@ -53,6 +58,11 @@ def menu_ingreso():
                     contraseña = input("                        Ingrese contraseña: ")
                     print("-------------------------------------------------------------------")
                     pregunta = obtener_pregunta_aleatoria_repo()
+
+                    if pregunta is None:
+                        print("No hay preguntas registradas en la base de datos")
+                        continue
+
                     respuesta = menu_pregunta(pregunta)
                     logueo = login_service(
                         usuario, 
@@ -63,10 +73,10 @@ def menu_ingreso():
                     if logueo != True:    
                         for mensaje in logueo:
                             print(mensaje)
-                        menu_ingreso()
                     else:
                         print(f"         Login realizado con exito, bienvenido al club, {usuario}")
-                        menu_sistema()
+                        usuario_db = buscar_usuario(usuario)
+                        menu_sistema(usuario_db["id"])
                 
                 case 3 :
                     return
@@ -78,3 +88,8 @@ def menu_ingreso():
 
         except ValueError:
             print("El valor ingresado debe ser un número")
+
+
+if __name__ == "__main__":
+    inicializar_db()
+    menu_ingreso()
